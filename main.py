@@ -12,6 +12,10 @@ dp = Dispatcher(bot)
 async def get_start(message: types.Message):
    await message.answer(text='Botdan foydalanishingiz mumkin 😉. So`z kiriting inglizchaga tarjima qiladi ✅!')
 
+@dp.message_handler(Text(equals=["dasturchi", "/devoloper", "devoloper"]))
+async def get_start(message: types.Message):
+   await message.answer(text='👨‍💻 @Devoloper1')
+
 
 @dp.message_handler()
 async def get_message(message: types.Message):
