@@ -1,24 +1,51 @@
-from aiogram import Bot, Dispatcher, types
-from aiogram.utils import executor
-from aiogram.dispatcher.filters import Text
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
-from itranslate import itranslate as tarjima
+import logging
+import requests
+from aiogram import Bot, Dispatcher, executor, types
+import os
 
-bot = Bot(token='2066336127:AAGv0PKfHGDekqTeIFNLxDIwrD0ZG1sGhgE', parse_mode=types.ParseMode.HTML)
+API_TOKEN = '5708808543:AAE7QDlXLn_UYI8uo0tc6IisFyJMqYq0m6M'
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+
+# Initialize bot and dispatcher
+bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
 
-@dp.message_handler(Text(equals=["start", "/start"]))
-async def get_start(message: types.Message):
-   await message.answer(text='Botdan foydalanishingiz mumkin 😉. So`z kiriting inglizchaga tarjima qiladi ✅!')
+@dp.message_handler(commands=['start', 'help'])
+async def send_welcome(message: types.Message):
+    
+    with open('users.txt', 'a') as f:
+        f.write('0')
 
-@dp.message_handler(Text(equals=["dasturchi", "/devoloper", "devoloper"]))
-async def get_start(message: types.Message):
-   await message.answer(text='👨‍💻 @Devoloper1')
+    await message.reply("<b>👋 Salom! Xush kelibsiz. Men sizga ve-saytlarning faviconini yuklab beraman!\n🌐 Veb-saytning ssilkasini jo'natish uchun:</b> /favicon\n<b>🧑‍💻 Dasturchi: </b>@uz_developer_uz @jalol_dev", parse_mode='html')
 
 
-@dp.message_handler()
-async def get_message(message: types.Message):
-    await message.reply(text=f'Siz kiritgan so`z: <b>{message.text}</b>'+'\nTarjimasi: '+'<b>'+tarjima(message.text,to_lang='en')+'</b>')
 
-executor.start_polling(dp)
+@dp.message_handler(commands=['favicon'])
+async def favicon(message: types.Message):
+ 
+    await message.reply("✅ Veb-saytning ssilkasini domain.com tarzida yuboring!\n❌ https://domain.com tarzida emas!")
+
+    @dp.message_handler()
+    async def favicon_in(message: types.Message):
+        await message.reply(f"https://icon.horse/icon/{message.text}")
+
+@dp.message_handler(commands=['dasturchi'])
+async def favicon(message: types.Message):
+ 
+    await message.reply("<b>😉 Agar muammo bo'lsa @uz_developer_uz @jalol_dev ga murojat qiling</b>", parse_mode='html')
+
+@dp.message_handler(commands=['users'])
+async def favicon(message: types.Message):
+    users = 0
+    with open('users.txt','r') as r:
+        read = r.read()
+
+    for s in read:
+        users+=1
+    await message.reply(f"📊Foydalanuvchilar soni: <i>{users}ta</i>", parse_mode='html')
+
+if __name__ == '__main__':
+    executor.start_polling(dp, skip_updates=True)
